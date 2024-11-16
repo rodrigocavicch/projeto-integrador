@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Aluno</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <img src="imagens/logo.PNG" alt="Logo Open Skills" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="../minhasAulas_aluno/index.html">Minhas Aulas</a></li>
+                    <li><a href="../conta_aluno/index.html">Minha Conta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Área de Aulas Disponíveis -->
+    <main class="main-content">
+        <div class="container">
+            <h1>Aulas Disponíveis</h1>
+
+            <!-- Barra de Pesquisa e Filtros -->
+            <div class="filters">
+                <input type="text" id="searchBar" placeholder="Pesquisar aulas..." class="search-bar">
+                <input type="date" id="dateFilter" class="filter">
+            </div>
+
+            <!-- Lista de Aulas -->
+            <div id="lessonList" class="lesson-list">
+                <!-- Exemplo de uma aula disponível -->
+                <div class="lesson-card">
+                    <h2>Introdução à Matemática</h2>
+                    <p>Data: 20/11/2024</p>
+                    <p>Matéria: Matemática</p>
+                    <button class="access-button" onclick="window.location.href='../aula_aluno/index.html'">Ver Mais</button>
+                </div>
+
+                <div class="lesson-card">
+                    <h2>Gramática Portuguesa</h2>
+                    <p>Data: 22/11/2024</p>
+                    <p>Matéria: Português</p>
+                    <button class="access-button" onclick="window.location.href='../aula_aluno/index.html'">Ver Mais</button>
+                </div>
+
+                <!-- Mais aulas podem ser adicionadas dinamicamente -->
+            </div>
+        </div>
+    </main>
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

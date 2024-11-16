@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login de Aluno</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <nav>
+            <a href="../landingPage/index.html" class="back-button">&#8592; Voltar</a>
+            <a href="../contato/index.html">contato</a>
+            <a href="../sobre/index.html">sobre</a>
+        </nav>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <img src="imagens/logo2.png" alt="Logo Open Skills" class="logo">
+            <h2>Faça seu login!</h2>
+            <form id="loginForm">
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" required><br>
+
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" required><br>
+
+                <button type="submit">Entrar</button>
+            </form>
+            <hr>
+            <p>Não tem conta?</p>
+            <a href="../landingPage/index.html#cadastro-section"><button class="register-button">Cadastrar-se</button></a>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

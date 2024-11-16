@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula - Open Skills</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <img src="imagens/logo.PNG" alt="Logo Open Skills" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="../home_aluno/index.html" class="back-button">&#8592; Voltar</a></li>
+                    <li><a href="../minhasAulas_aluno/index.html">Minhas Aulas</a></li>
+                    <li><a href="../conta_aluno/index.html">Minha Conta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Informações da Aula -->
+            <section class="lesson-details">
+                <h1>Título da Aula: Introdução à Matemática</h1>
+                <p><strong>Descrição:</strong> Nesta aula, aprenderemos os conceitos básicos de álgebra e como aplicá-los no dia a dia.</p>
+                <p><strong>Data:</strong> 20/11/2024</p>
+                <p><strong>Matéria:</strong> Matemática</p>
+            </section>
+
+            <div class="evaluate-container">
+                <button class="evaluate-button" onclick="abrirModal()">Avaliar Aula</button>
+            </div>
+            
+            <!-- Modal de Avaliação -->
+            <div id="evaluationModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-button" onclick="fecharModal()">&times;</span>
+                    <h2>Avaliar Aula</h2>
+                    <form id="evaluationForm">
+                        <label for="rating">Nota (0 a 10):</label>
+                        <input type="number" id="rating" name="rating" min="0" max="10" required>
+
+                        <label for="comment">Comentário:</label>
+                        <textarea id="comment" name="comment" placeholder="Escreva seu comentário" rows="5" required></textarea>
+
+                        <button type="submit" class="submit-evaluation-button">Enviar Avaliação</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
