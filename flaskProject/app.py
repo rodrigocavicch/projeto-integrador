@@ -21,13 +21,8 @@ def fetch_all(query):
     return rv
 
 @app.route("/")
-def hello_world():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM alunos")
-    rv = cur.fetchall()  # Fetch all rows
-    cur.close()
-
-    return jsonify(rv)
+def landing_page():
+    return render_template('landing_page.html')
 
 @app.route("/login")
 def login():
@@ -76,10 +71,6 @@ def home_aluno():
 @app.route("/home_monitor")
 def home_monitor():
     return render_template('home_monitor.html')
-
-@app.route("/landing_page")
-def landing_page():
-    return render_template('landing_page.html')
 
 @app.route("/minhas_aulas_aluno")
 def minhas_aulas_aluno():
