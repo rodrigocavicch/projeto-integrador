@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem Vindo(a) à Open Skills</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing_page.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Open Skills" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                    <li><a href="{{ url_for('contato') }}">Contato</a></li>
+                </ul>
+            </nav>  
+            <div class="auth-buttons">
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+                <a onclick="rolar()" class="btn">Cadastre-se</a>
+                <script>
+                    function rolar() {
+                      window.scrollTo({
+                        top: document.body.scrollHeight,
+                        behavior: 'smooth'
+                      });
+                    }
+                </script>
+            </div>
+        </div>
+    </header>
+
+    <!-- Seção Principal -->
+    <section class="hero">
+        <div class="container">
+            <h1>Conectando Conhecimento e Aprendizado Voluntário</h1>
+            <p>Nosso compromisso é tornar o aprendizado acessível, acolhedor e gratuito. Acreditamos que a educação é um direito e construir um futuro onde o conhecimento seja livre, aberto e disponível para todos.</p>
+            <img src="{{ url_for('static', filename='images/aprendizado.png') }}" alt="Logo Open Skills" class="cerebro">
+            <div id="cadastro-section" class="hero-buttons">
+                <a href="{{ url_for('cadastro_monitor') }}" class="btn-primary">Quero Ser Monitor</a>
+                <a href="{{ url_for('cadastro_aluno') }}" class="btn-secondary">Quero Ser Aluno</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Como Funciona -->
+    <section id="como-funciona" class="how-it-works">
+        <div class="container">
+            <h2>Como Funciona</h2>
+            <div class="steps">
+                <div class="step">
+                    <h3>1. Cadastre-se na Plataforma</h3>
+                    <p>Crie uma conta de forma rápida e fácil.</p>
+                </div>
+                <div class="step">
+                    <h3>2. Escolha uma Monitoria</h3>
+                    <p>Encontre monitores disponíveis nas áreas de seu interesse.</p>
+                </div>
+                <div class="step">
+                    <h3>3. Participe e Aprenda!</h3>
+                    <p>Entre em contato com o monitor e melhore suas habilidades.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

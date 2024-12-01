@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro_aluno.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <nav>
+            <a href="{{ url_for('landing_page') }}" class="back-button">&#8592; Voltar</a>
+            <a href="{{ url_for('contato') }}">contato</a>
+            <a href="{{ url_for('sobre') }}">sobre</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="form-section">
+            <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Logo Open Skills" class="logo">
+            <h2>Preencha o formulário com os seus dados</h2>
+            <form id="alunoForm">
+                <label for="nome_aluno">Nome completo:</label>
+                <input type="text" id="nome_aluno" name="nome_aluno" required><br>
+                <span class="error-message" id="nome_aluno-error"></span><br>
+
+                <label for="email_aluno">E-mail:</label>
+                <input type="email" id="email_aluno" name="email_aluno" required><br>
+                <span class="error-message" id="email_aluno-error"></span><br>
+
+                <label for="tel_aluno">Celular:</label>
+                <input type="tel" id="tel_aluno" name="tel_aluno" required><br>
+                <span class="error-message" id="tel_aluno-error"></span><br>
+
+                <label for="cpf_aluno">CPF:</label>
+                <input type="text" id="cpf_aluno" name="cpf_aluno" required><br>
+                <span class="error-message" id="cpf_aluno-error"></span><br>
+
+                <label for="nasc_aluno">Data de Nascimento:</label>
+                <input type="date" id="nasc_aluno" name="nasc_aluno" required><br>
+                <span class="error-message" id="nasc_aluno-error"></span><br>
+
+                <label for="gen_aluno">Gênero:</label>
+                <select id="gen_aluno" name="gen_aluno" required>
+                    <option value="" disabled selected>Selecione...</option>
+                    <option value="m">Masculino</option>
+                    <option value="f">Feminino</option>
+                    <option value="nd">Outro</option>
+                </select><br>
+                <span class="error-message" id="gen_aluno-error"></span><br>
+
+                <label for="senha_aluno">Senha:</label>
+                <input type="password" id="senha_aluno" name="senha_aluno" required><br>
+                <span class="error-message" id="senha_aluno-error"></span><br>
+
+                <label for="confirmarSenha">Confirme sua Senha:</label>
+                <input type="password" id="confirmarSenha" name="confirmarSenha" required><br>
+                <span class="error-message" id="confirmarSenha-error"></span><br>
+
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/cadastro_aluno.js') }}"></script>
+</body>
+
+</html>

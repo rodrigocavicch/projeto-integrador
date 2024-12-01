@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato - Open Skills</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contato.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Open Skills" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('landing_page') }}">Home</a></li>
+                    <li><a href="{{ url_for('sobre') }}">Sobre</a></li>
+                </ul>   
+            </nav>  
+            <div class="auth-buttons">
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+                <a href="{{ url_for('landing_page') }}" class="btn">Cadastre-se</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="contact">
+        <div class="container">
+            <h1>Entre em Contato com a Open Skills</h1>
+            <p>Estamos aqui para ajudar! Se você tiver dúvidas, sugestões ou precisar de assistência, entre em contato conosco. Nossa equipe está pronta para responder e garantir que sua experiência na Open Skills seja a melhor possível.</p>
+            <h2>Como podemos ajudar?</h2>
+            <ul>
+                <li><strong>Dúvidas sobre a plataforma:</strong> Se precisar de ajuda para se cadastrar, encontrar monitorias ou qualquer outra funcionalidade da Open Skills, estamos à disposição para guiar você.</li>
+                <li><strong>Sugestões:</strong> Valorizamos muito as opiniões dos nossos usuários! Se tiver sugestões sobre como podemos melhorar, queremos ouvir você.</li>
+                <li><strong>Suporte técnico:</strong> Encontrou algum problema? Fale com nossa equipe, e faremos o possível para resolver rapidamente.</li>
+            </ul>
+            <h2>Fale com a gente</h2>
+            <p>Envie um e-mail para <a href="mailto:openskills@gmail.com">openskills@gmail.com</a> e retornaremos o mais rápido possível. Juntos, podemos construir uma comunidade de aprendizado mais forte e conectada!</p>
+        </div>
+    </section>
+          
+
+    <!-- Rodapé -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Aula - Monitor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/criar_aula.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Open Skills" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home_monitor') }}">Minhas Aulas</a></li>
+                    <li><a href="{{ url_for('conta_monitor') }}">Minha Conta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Formulário para criar aula -->
+    <main class="main-content">
+        <div class="container">
+            <h1>Criar Nova Aula</h1>
+            <form id="createClassForm" class="create-class-form">
+                <label for="titulo">Título da Aula:</label>
+                <input type="text" id="titulo" name="titulo" placeholder="Digite o título da aula" required>
+
+                <label for="materia">Matéria:</label>
+                <select id="materia" name="materia" required>
+                    <option value="" disabled selected>Selecione...</option>
+                </select>
+                <br>
+                <span class="error-message" id="materia-error"></span>
+                <br>
+
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" name="descricao" placeholder="Descreva as informações da aula e de contato" rows="5" required></textarea>
+
+                <label for="link">Link:</label>
+                <input type="text" id="link" name="link" placeholder="Informe o link da aula"required>
+
+                <label for="data">Data:</label>
+                <input type="datetime-local" id="data" name="data" required>
+
+                <button type="submit" class="create-class-button">Criar Aula</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/criar_aula.js') }}"></script>
+</body>
+</html>

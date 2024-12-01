@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuário</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro_monitor.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <nav>
+            <a href="{{ url_for('landing_page') }}" class="back-button">&#8592; Voltar</a>
+            <a href="{{ url_for('contato') }}">contato</a>
+            <a href="{{ url_for('sobre') }}">sobre</a>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="form-section">
+            <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Logo Open Skills" class="logo">
+            <h2>Preencha o formulário com os seus dados</h2>
+            <form id="monitorForm">
+                <label for="nome_monitor">Nome completo:</label>
+                <input type="text" id="nome_monitor" name="nome_monitor" required><br>
+                <span class="error-message" id="nome_monitor-error"></span><br>
+
+                <label for="email_monitor">E-mail:</label>
+                <input type="email" id="email_monitor" name="email_monitor" required><br>
+                <span class="error-message" id="email_monitor-error"></span><br>
+
+                <label for="tel_monitor">Celular:</label>
+                <input type="tel" id="tel_monitor" name="tel_monitor" required><br>
+                <span class="error-message" id="tel_monitor-error"></span><br>
+
+                <label for="cpf_monitor">CPF:</label>
+                <input type="text" id="cpf_monitor" name="cpf_monitor" required><br>
+                <span class="error-message" id="cpf_monitor-error"></span><br>
+
+                <label for="nasc_monitor">Data de Nascimento:</label>
+                <input type="date" id="nasc_monitor" name="nasc_monitor" required><br>
+                <span class="error-message" id="nasc_monitor-error"></span><br>
+
+                <label for="gen_monitor">Gênero:</label>
+                <select id="gen_monitor" name="gen_monitor" required>
+                    <option value="m">Masculino</option>
+                    <option value="f">Feminino</option>
+                    <option value="nd">Outro</option>
+                </select><br>
+                <span class="error-message" id="gen_monitor-error"></span><br>
+
+                <label for="senha_monitor">Senha:</label>
+                <input type="password" id="senha_monitor" name="senha_monitor" required><br>
+                <span class="error-message" id="senha_monitor-error"></span><br>
+
+                <label for="confirmarSenha">Confirme sua Senha:</label>
+                <input type="password" id="confirmarSenha" name="confirmarSenha" required><br>
+                <span class="error-message" id="confirmarSenha-error"></span><br>
+
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/cadastro_monitor.js') }}"></script>
+</body>
+
+</html>

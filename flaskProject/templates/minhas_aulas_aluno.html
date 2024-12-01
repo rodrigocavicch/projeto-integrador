@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Aulas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/minhas_aulas_aluno.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Open Skills" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home_aluno') }}" class="back-button">&#8592; Voltar</a></li>
+                    <li><a href="{{ url_for('conta_aluno') }}">Minha Conta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Área Principal -->
+    <main class="main-content">
+        <div class="container">
+            <h1>Minhas Aulas</h1>
+
+            <!-- Lista de Aulas -->
+            <div id="lessonList" class="lesson-list">
+                <!-- Exemplo de uma aula criada -->
+                <div class="lesson-card">
+                    <h2>Aula de Álgebra Linear</h2>
+                    <p><strong>Data:</strong> 21/11/2024</p>
+                    <p><strong>Horário:</strong> 15:30</p>
+                    <p><strong>Matéria:</strong> Matemática</p>
+                    <p><strong>Monitor:</strong> Gabriel</p>
+                    <button class="access-button" onclick="window.location.href='../aula_aluno_inscrito'">Acessar</button>
+                </div>
+
+                <div class="lesson-card">
+                    <h2>Aula de Redação</h2>
+                    <p><strong>Data:</strong> 25/11/2024</p>
+                    <p><strong>Hora:</strong> 15:30</p>
+                    <p><strong>Matéria:</strong> Português</p>
+                    <p><strong>Monitor:</strong> Gabriel</p>
+                    <button class="access-button" onclick="window.location.href='../aula_aluno_inscrito'">Acessar</button>
+                </div>
+                <!-- Outras aulas podem ser adicionadas dinamicamente -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+</body>
+</html>

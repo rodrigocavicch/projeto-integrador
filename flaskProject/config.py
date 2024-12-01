@@ -1,0 +1,7 @@
+DB_CONFIG = {
+'MYSQL_HOST': 'localhost',
+'MYSQL_USER': 'root',
+'MYSQL_PASSWORD': '23050820',
+'MYSQL_DB': 'pi',
+'MYSQL_PORT': 3306
+}

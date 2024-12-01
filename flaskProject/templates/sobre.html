@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - Open Skills</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sobre.css') }}">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Open Skills" class="logo">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('landing_page') }}">Home</a></li>
+                    <li><a href="{{ url_for('contato') }}">Contato</a></li>
+                </ul>
+            </nav>  
+            <div class="auth-buttons">
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+                <a href="{{ url_for('landing_page') }}" class="btn">Cadastre-se</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Seção Sobre -->
+    <section class="about">
+        <div class="container">
+            <h1>Sobre a Open Skills</h1>
+            <p>A Open Skills é uma plataforma dedicada a conectar monitores voluntários com alunos que buscam aprender e se desenvolver. Nosso objetivo é tornar o aprendizado acessível, acolhedor e gratuito, promovendo o compartilhamento de conhecimento entre pessoas com diferentes habilidades e experiências.</p>
+            <p>Fundada com a missão de democratizar a educação, a Open Skills acredita que o conhecimento deve estar ao alcance de todos. Os monitores voluntários se dedicam a orientar e ensinar, criando um ambiente de aprendizado colaborativo e inclusivo.</p>
+            <h2>Nosso Compromisso</h2>
+            <p>Estamos comprometidos em proporcionar uma experiência de aprendizado de qualidade, onde cada aluno e monitor se sinta valorizado e acolhido. Nossa visão é um futuro onde o conhecimento seja livre, acessível e construído em comunidade.</p>
+        </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
