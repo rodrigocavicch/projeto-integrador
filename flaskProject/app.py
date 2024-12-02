@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 
 from flask_mysqldb import MySQL
 
 from config import DB_CONFIG
 
 app = Flask(__name__)
+
 app.config['MYSQL_HOST'] = DB_CONFIG['MYSQL_HOST']
 app.config['MYSQL_USER'] = DB_CONFIG['MYSQL_USER']
 app.config['MYSQL_PASSWORD'] = DB_CONFIG['MYSQL_PASSWORD']
@@ -12,6 +13,7 @@ app.config['MYSQL_DB'] = DB_CONFIG['MYSQL_DB']
 app.config['MYSQL_PORT'] = DB_CONFIG['MYSQL_PORT']
 
 mysql = MySQL(app)
+app.secret_key = "12345"  # Necessário para usar sessões
 
 def fetch_all(query):
     cur = mysql.connection.cursor()
@@ -19,6 +21,30 @@ def fetch_all(query):
     rv = cur.fetchall()
     cur.close()
     return rv
+
+def fetch_one(query, params=None):
+    cur = mysql.connection.cursor()
+    if params:
+        cur.execute(query, params)
+    else:
+        cur.execute(query)
+    rv = cur.fetchall()
+    cur.close()
+    return rv
+
+def validate_user(email, senha, is_monitor=False):
+    query = (
+        "SELECT id_aluno, nome_aluno FROM alunos WHERE email_aluno=%s AND senha_aluno=%s"
+        if not is_monitor
+        else "SELECT id_monitor, nome_monitor FROM monitores WHERE email_monitor=%s AND senha_monitor=%s"
+    )
+    try:
+        result = fetch_one(query, (email, senha))
+        print(f"Query executada: {query} com parâmetros: {email}, {senha}")
+        return result[0] if result else None
+    except Exception as e:
+        print(f"Erro ao validar usuário: {e}")
+        return None
 
 @app.route("/")
 def landing_page():
@@ -66,10 +92,14 @@ def criar_aula():
 
 @app.route("/home_aluno")
 def home_aluno():
+    if session.get("user_type") != "aluno":
+        return redirect("/login")  # Redireciona para o login se não for aluno
     return render_template('home_aluno.html')
 
 @app.route("/home_monitor")
 def home_monitor():
+    if session.get("user_type") != "monitor":
+        return redirect("/login")  # Redireciona para o login se não for monitor
     return render_template('home_monitor.html')
 
 @app.route("/minhas_aulas_aluno")
@@ -117,6 +147,74 @@ def get_monitores():
     ]
     return jsonify(monitores)
 
+@app.route("/login_func", methods=["POST"])
+def login_func():
+    print("Função Login")
+    data = request.json
+    print(f"{data}")
+    email = data.get("email")
+    senha = data.get("senha")
+
+    if not email or not senha:
+        return jsonify({"success": False, "message": "Preencha todos os campos."}), 400
+
+    # Primeiro, tenta validar como aluno
+    user = validate_user(email, senha, is_monitor=False)
+    if user:
+        session["user_id"] = user[0]
+        session["user_type"] = "aluno"
+        session["user_name"] = user[1]
+        return jsonify({"success": True, "redirect": "/home_aluno"})
+
+    # Caso não seja aluno, tenta como monitor
+    user = validate_user(email, senha, is_monitor=True)
+    if user:
+        session["user_id"] = user[0]
+        session["user_type"] = "monitor"
+        session["user_name"] = user[1]
+        return jsonify({"success": True, "redirect": "/home_monitor"})
+
+    # Se não for encontrado, retorna erro
+    return jsonify({"success": False, "message": "Credenciais inválidas."}), 401
+
+@app.route("/api/minhas_aulas", methods=["GET"])
+def get_minhas_aulas():
+    try:
+        user_id = session.get("user_id")
+        if not user_id:
+            print("Erro: Usuário não autenticado")
+            return jsonify({"error": "Usuário não autenticado"}), 401
+
+        print(f"Buscando aulas para o usuário com ID: {user_id}")
+
+        query = """
+        SELECT aulas.id_aula, aulas.titulo, aulas.horario, materias.nome_materia AS materia, monitores.nome AS monitor
+        FROM aula_aluno
+        JOIN aulas ON aulas.id_aula = aula_aluno.id_aula
+        JOIN materias ON aulas.id_materia = materias.id_materia
+        JOIN monitores ON aulas.id_monitor = monitores.id_monitor
+        WHERE aula_aluno.id_aluno = %s
+        """
+        aulas = fetch_all(query, (user_id,))  # Substitua pela sua função de consulta
+        print(f"Aulas encontradas: {aulas}")
+
+        aulas_formatadas = [
+            {
+                "id_aula": aula[0],
+                "titulo": aula[1],
+                "horario": aula[2].strftime('%Y-%m-%d %H:%M:%S'),
+                "materia": aula[3],
+                "monitor": aula[4]
+            }
+            for aula in aulas
+        ]
+        return jsonify(aulas_formatadas)
+
+    except Exception as e:
+        print(f"Erro no endpoint '/api/minhas_aulas': {e}")
+        return jsonify({"error": "Erro interno no servidor"}), 500
+
+
 # Route for fetching all rows from the 'materias' table
 @app.route("/api/materias", methods=["GET"])
 def get_materias():
@@ -130,37 +228,34 @@ def get_materias():
     ]
     return jsonify(materias)
 
-# Route for fetching all rows from the 'mat_monitor' table
-@app.route("/api/mat_monitor", methods=["GET"])
-def get_mat_monitor():
-    rows = fetch_all("SELECT * FROM mat_monitor")
-    mat_monitor = [
-        {
-            "id_mat_monitor": row[0],
-            "id_monitor": row[1],
-            "id_materia": row[2]
-        }
-        for row in rows
-    ]
-    return jsonify(mat_monitor)
-
-# Route for fetching all rows from the 'aulas' table
 @app.route("/api/aulas", methods=["GET"])
 def get_aulas():
-    rows = fetch_all("SELECT * FROM aulas")
+    query = """
+    SELECT 
+        a.id_aula, 
+        a.titulo, 
+        a.horario, 
+        a.descricao, 
+        m.nome_materia AS materia, 
+        mn.nome_monitor AS monitor
+    FROM aulas a
+    LEFT JOIN materias m ON a.id_materia = m.id_materia
+    LEFT JOIN monitores mn ON a.id_monitor = mn.id_monitor
+    """
+    rows = fetch_all(query)
     aulas = [
         {
             "id_aula": row[0],
-            "horario": row[1].strftime('%Y-%m-%d %H:%M:%S'),
-            "link": row[2],
-            "id_materia": row[3],
-            "id_monitor": row[4]
+            "titulo": row[1],
+            "horario": row[2].strftime('%d/%m/%Y %H:%M'),
+            "descricao": row[3],
+            "materia": row[4],
+            "monitor": row[5]
         }
         for row in rows
     ]
     return jsonify(aulas)
 
-# @app.route("/api/id_materia", )
 
 # Route for fetching all rows from the 'aula_aluno' table
 @app.route("/api/aula_aluno", methods=["GET"])
@@ -212,38 +307,14 @@ def create_monitor():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
     
-# @app.route('/api/aulas', methods=['POST'])
-# def create_aula():
-#     try:
-#         data = request.get_json()  # Obtém os dados JSON enviados pelo frontend
-#         # Processa os dados, insere no banco de dados, etc.
-#         cursor = mysql.connection.cursor()
-#         cursor.execute('''
-#             INSERT INTO aulas (horario, link, id_materia, id_monitor)
-#             VALUES (%s, %s, %s, %s)
-#         ''', (data['horario'], data['link'], data['id_materia'], data['id_monitor']))
-#         mysql.connection.commit()
-#         cursor.close()
+@app.route("/logout")
+def logout():
+    session.clear()  # Remove todos os dados armazenados na sessão
+    return redirect("/")
 
-#         return jsonify({'message': 'Aula criada com sucesso'}), 201
-#     except Exception as e:
-#         return jsonify({'error': str(e)}), 400
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@app.route("/debug/sessao", methods=["GET"])
+def debug_sessao():
+    return jsonify(dict(session))  # Transforma a sessão em um dicionário JSON
 
 
 if __name__ == "__main__":
