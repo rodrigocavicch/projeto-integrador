@@ -24,13 +24,28 @@
     <main class="main-content">
         <div class="container">
             <h1>Minhas Aulas</h1>
-            <!-- Barra de Pesquisa e Filtros -->
-            <div class="filters">
-                <input type="text" id="searchBar" placeholder="Pesquisar aulas..." class="search-bar">
-                <input type="date" id="dateFilter" class="filter">
-            </div>
 
+            <!-- Lista de Aulas -->
             <div id="lessonList" class="lesson-list">
+                <!-- Exemplo de uma aula criada -->
+                <div class="lesson-card">
+                    <h2>Aula de Álgebra Linear</h2>
+                    <p><strong>Data:</strong> 21/11/2024</p>
+                    <p><strong>Horário:</strong> 15:30</p>
+                    <p><strong>Matéria:</strong> Matemática</p>
+                    <p><strong>Monitor:</strong> Gabriel</p>
+                    <button class="access-button" onclick="window.location.href='../aula_aluno_inscrito'">Acessar</button>
+                </div>
+
+                <div class="lesson-card">
+                    <h2>Aula de Redação</h2>
+                    <p><strong>Data:</strong> 25/11/2024</p>
+                    <p><strong>Hora:</strong> 15:30</p>
+                    <p><strong>Matéria:</strong> Português</p>
+                    <p><strong>Monitor:</strong> Gabriel</p>
+                    <button class="access-button" onclick="window.location.href='../aula_aluno_inscrito'">Acessar</button>
+                </div>
+                <!-- Outras aulas podem ser adicionadas dinamicamente -->
             </div>
         </div>
     </main>
@@ -41,8 +56,6 @@
             <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
         </div>
     </footer>
-    
     <script src="{{ url_for('static', filename='js/minhas_aulas_aluno.js') }}"></script>
-    <div id="userData" data-id="{{ user_id }}"></div>
 </body>
 </html>

@@ -5,6 +5,9 @@ html, body {
     flex-direction: column;
     font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Estilo do cabeçalho */
+
 header {
     display: flex;
     justify-content: center;
@@ -38,6 +41,7 @@ nav ul li {
 }
 
 nav ul li a {
+    padding-right: 20px;
     text-decoration: none;
     color: #f39c12;
     font-weight: bold;
@@ -54,34 +58,15 @@ nav ul li a:hover {
 }
 
 .main-content {
-    padding: 40px 20px;
+    padding: 20px 20px;
 }
 
 .main-content h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
-/* Filtros e barra de pesquisa */
-.filters {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    justify-content: center;
-}
-
-.search-bar,
-.filter {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-.search-bar {
-    flex: 1;
-}
 
 /* Lista de Aulas */
 .lesson-list {
@@ -95,6 +80,7 @@ nav ul li a:hover {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f39c12;
 }
 
 .lesson-card h2 {
@@ -125,31 +111,6 @@ nav ul li a:hover {
     position: relative;
     bottom: 0;
     width: 100%;
-}
-
-.lesson-link {
-    display: inline-block;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: bold;
-    color: #ffffff; /* Cor do texto */
-    background-color: #FFA500; /* Laranja padrão */
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.lesson-link:hover {
-    background-color: #FF8C00; /* Laranja mais escuro */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transform: scale(1.05); /* Aumenta levemente o tamanho */
-}
-
-.lesson-link:active {
-    background-color: #E07B00; /* Laranja ainda mais escuro ao clicar */
-    transform: scale(0.95); /* Reduz levemente o tamanho */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 footer p {
