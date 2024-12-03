@@ -1,3 +1,26 @@
+// Colocando a função fora do bloco DOMContentLoaded para que ela fique globalmente acessível
+async function inscreverAula(aulaId) {
+    try {
+        const response = await fetch("/api/inscrever_aula", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ id_aula: aulaId })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.message); // Mostra mensagem de sucesso
+        } else {
+            alert(data.message); // Mostra mensagem de erro
+        }
+    } catch (error) {
+        console.error("Erro ao inscrever-se na aula:", error);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const lessonList = document.getElementById("lessonList");
     const searchBar = document.getElementById("searchBar");
@@ -28,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p><strong>Horário:</strong> ${aula.horario.split(" ")[1]}</p>
                 <p><strong>Matéria:</strong> ${aula.materia}</p>
                 <p><strong>Monitor:</strong> ${aula.monitor}</p>
-                <button class="access-button" onclick="window.location.href='../aula_aluno'">Ver Mais</button>
+                <button class="access-button" onclick="inscreverAula(${aula.id_aula})">Inscrever-se</button>
             `;
             lessonList.appendChild(lessonCard);
         });

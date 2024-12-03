@@ -271,6 +271,54 @@ def get_aula_aluno():
     ]
     return jsonify(aula_aluno)
 
+def fetch_monitor_classes(monitor_id):
+    query = """
+        SELECT a.id_aula, a.titulo, a.descricao, a.link, a.horario, m.nome_materia
+        FROM aulas a
+        JOIN materias m ON a.id_materia = m.id_materia
+        WHERE a.id_monitor = %s
+        ORDER BY a.horario;
+    """
+    cur = mysql.connection.cursor()  
+    cur.execute(query, (monitor_id,))
+    aulas = cur.fetchall()
+
+    # Obter os nomes das colunas
+    colunas = [desc[0] for desc in cur.description]
+    cur.close()
+
+    # Converter tuplas em dicionários
+    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
+    return aulas_como_dicionario
+
+@app.route("/api/aulas_monitor", methods=["GET"])
+def get_aulas_monitor():
+    monitor_id = session.get("user_id")  # ID do monitor logado na sessão
+    user_type = session.get("user_type")
+
+    if user_type != "monitor" or not monitor_id:
+        return jsonify({"error": "Usuário não autorizado"}), 403
+
+    try:
+        aulas = fetch_monitor_classes(monitor_id)  # Busca as aulas do monitor
+
+        # Formata os dados para JSON
+        aulas_formatadas = [
+            {
+                "id_aula": aula["id_aula"],
+                "titulo": aula["titulo"],
+                "descricao":aula["descricao"],
+                "link":aula["link"],
+                "horario": aula["horario"].strftime("%Y-%m-%d %H:%M"),
+                "materia": aula["nome_materia"],
+            }
+            for aula in aulas
+        ]
+        return jsonify(aulas_formatadas)
+    except Exception as e:
+        print("Erro ao buscar aulas:", e)
+        return jsonify({"error": "Erro ao buscar aulas"}), 500
+
 @app.route('/api/alunos', methods=['POST'])
 def create_aluno():
     try:
@@ -311,6 +359,37 @@ def create_monitor():
 def logout():
     session.clear()  # Remove todos os dados armazenados na sessão
     return redirect("/")
+
+
+@app.route("/api/inscrever_aula", methods=["POST"])
+def inscrever_aula():
+    if 'user_id' not in session:  # Verifica se o usuário está autenticado
+        return jsonify({"message": "Usuário não autenticado"}), 401  # Retorna erro de não autenticado
+    
+    try:
+        # Obtém o id_aula do corpo da requisição
+        data = request.get_json()
+        id_aula = data.get('id_aula')
+        
+        # Recupera o id_aluno da sessão
+        id_aluno = session['user_id']
+        
+        # Insere a inscrição na tabela aula_aluno
+        query = """
+            INSERT INTO aula_aluno (id_aula, id_aluno)
+            VALUES (%s, %s)
+        """
+        # Execute a query com o id_aula e id_aluno
+        cursor = mysql.connection.cursor()
+        cursor.execute(query, (id_aula, id_aluno))
+        mysql.connection.commit()
+        
+        return jsonify({"message": "Inscrição realizada com sucesso!"}), 200
+    
+    except Exception as e:
+        mysql.connection.rollback()  # Caso algo dê errado, faz o rollback
+        return jsonify({"message": "Erro ao inscrever-se na aula: " + str(e)}), 500
+
 
 @app.route("/debug/sessao", methods=["GET"])
 def debug_sessao():
