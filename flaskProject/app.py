@@ -86,12 +86,10 @@ def conta_monitor():
 def contato():
     return render_template('contato.html')
 
-@app.route("/criar_aula")
-def criar_aula():
-    return render_template('criar_aula.html')
-
 @app.route("/home_aluno")
 def home_aluno():
+    user_id = session.get("user_id")  # ID do monitor logado na sessão
+    user_type = session.get("user_type")
     if session.get("user_type") != "aluno":
         return redirect("/login")  # Redireciona para o login se não for aluno
     return render_template('home_aluno.html')
@@ -146,36 +144,6 @@ def get_monitores():
         for row in rows
     ]
     return jsonify(monitores)
-
-@app.route("/login_func", methods=["POST"])
-def login_func():
-    print("Função Login")
-    data = request.json
-    print(f"{data}")
-    email = data.get("email")
-    senha = data.get("senha")
-
-    if not email or not senha:
-        return jsonify({"success": False, "message": "Preencha todos os campos."}), 400
-
-    # Primeiro, tenta validar como aluno
-    user = validate_user(email, senha, is_monitor=False)
-    if user:
-        session["user_id"] = user[0]
-        session["user_type"] = "aluno"
-        session["user_name"] = user[1]
-        return jsonify({"success": True, "redirect": "/home_aluno"})
-
-    # Caso não seja aluno, tenta como monitor
-    user = validate_user(email, senha, is_monitor=True)
-    if user:
-        session["user_id"] = user[0]
-        session["user_type"] = "monitor"
-        session["user_name"] = user[1]
-        return jsonify({"success": True, "redirect": "/home_monitor"})
-
-    # Se não for encontrado, retorna erro
-    return jsonify({"success": False, "message": "Credenciais inválidas."}), 401
 
 @app.route("/api/minhas_aulas", methods=["GET"])
 def get_minhas_aulas():
@@ -271,6 +239,159 @@ def get_aula_aluno():
     ]
     return jsonify(aula_aluno)
 
+def fetch_monitor_classes(monitor_id):
+    query = """
+        SELECT a.id_aula, a.titulo, a.descricao, a.link, a.horario, m.nome_materia
+        FROM aulas a
+        JOIN materias m ON a.id_materia = m.id_materia
+        WHERE a.id_monitor = %s
+        ORDER BY a.horario;
+    """
+    cur = mysql.connection.cursor()  
+    cur.execute(query, (monitor_id,))
+    aulas = cur.fetchall()
+
+    # Obter os nomes das colunas
+    colunas = [desc[0] for desc in cur.description]
+    cur.close()
+
+    # Converter tuplas em dicionários
+    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
+    return aulas_como_dicionario
+
+@app.route("/api/aulas_monitor", methods=["GET"])
+def get_aulas_monitor():
+    monitor_id = session.get("user_id")  # ID do monitor logado na sessão
+    user_type = session.get("user_type")
+
+    if user_type != "monitor" or not monitor_id:
+        return jsonify({"error": "Usuário não autorizado"}), 403
+
+    try:
+        aulas = fetch_monitor_classes(monitor_id)  # Busca as aulas do monitor
+
+        # Formata os dados para JSON
+        aulas_formatadas = [
+            {
+                "id_aula": aula["id_aula"],
+                "titulo": aula["titulo"],
+                "descricao":aula["descricao"],
+                "link":aula["link"],
+                "horario": aula["horario"].strftime("%Y-%m-%d %H:%M"),
+                "materia": aula["nome_materia"],
+            }
+            for aula in aulas
+        ]
+        return jsonify(aulas_formatadas)
+    except Exception as e:
+        print("Erro ao buscar aulas:", e)
+        return jsonify({"error": "Erro ao buscar aulas"}), 500
+
+def fetch_aulas_disponiveis(aluno_id):
+    query = """
+        SELECT a.id_aula, a.titulo, a.descricao, a.horario, a.link, m.nome_materia
+        FROM aulas a
+        JOIN materias m ON a.id_materia = m.id_materia
+        WHERE a.id_aula NOT IN (
+            SELECT aa.id_aula
+            FROM aula_aluno aa
+            WHERE aa.id_aluno = %s
+        )
+        ORDER BY a.horario;
+    """
+    cur = mysql.connection.cursor()
+    cur.execute(query, (aluno_id,))
+    aulas = cur.fetchall()
+
+    # Obter os nomes das colunas
+    colunas = [desc[0] for desc in cur.description]
+    cur.close()
+
+    # Converter tuplas em dicionários
+    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
+    return aulas_como_dicionario
+
+
+@app.route("/api/aulas_disponiveis", methods=["GET"])
+def get_aulas_disponiveis():
+    aluno_id = session.get("user_id")  # ID do aluno logado na sessão
+    user_type = session.get("user_type")
+
+    if user_type != "aluno" or not aluno_id:
+        return jsonify({"error": "Usuário não autorizado"}), 403
+
+    try:
+        aulas = fetch_aulas_disponiveis(aluno_id)  # Busca as aulas disponíveis para o aluno
+
+        # Formata os dados para JSON
+        aulas_formatadas = [
+            {
+                "id_aula": aula["id_aula"],
+                "titulo": aula["titulo"],
+                "descricao": aula["descricao"],
+                "link": aula["link"],
+                "horario": aula["horario"].strftime("%Y-%m-%d %H:%M"),
+                "materia": aula["nome_materia"],
+            }
+            for aula in aulas
+        ]
+        return jsonify(aulas_formatadas)
+    except Exception as e:
+        print("Erro ao buscar aulas:", e)
+        return jsonify({"error": "Erro ao buscar aulas"}), 500
+
+def fetch_aulas_inscritas(aluno_id):
+    query = """
+        SELECT a.id_aula, a.titulo, a.descricao, a.horario, a.link, m.nome_materia
+        FROM aulas a
+        JOIN materias m ON a.id_materia = m.id_materia
+        WHERE a.id_aula IN (
+            SELECT aa.id_aula
+            FROM aula_aluno aa
+            WHERE aa.id_aluno = %s
+        )
+        ORDER BY a.horario;
+    """
+    cur = mysql.connection.cursor()
+    cur.execute(query, (aluno_id,))
+    aulas = cur.fetchall()
+
+    # Obter os nomes das colunas
+    colunas = [desc[0] for desc in cur.description]
+    cur.close()
+
+    # Converter tuplas em dicionários
+    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
+    return aulas_como_dicionario
+
+@app.route("/api/aulas_inscritas", methods=["GET"])
+def get_aulas_inscritas():
+    aluno_id = session.get("user_id")  # ID do aluno logado na sessão
+    user_type = session.get("user_type")
+
+    if user_type != "aluno" or not aluno_id:
+        return jsonify({"error": "Usuário não autorizado"}), 403
+
+    try:
+        aulas = fetch_aulas_inscritas(aluno_id)  # Busca as aulas inscritas para o aluno
+
+        # Formata os dados para JSON
+        aulas_formatadas = [
+            {
+                "id_aula": aula["id_aula"],
+                "titulo": aula["titulo"],
+                "descricao": aula["descricao"],
+                "link": aula["link"],
+                "horario": aula["horario"].strftime("%Y-%m-%d %H:%M"),
+                "materia": aula["nome_materia"],
+            }
+            for aula in aulas
+        ]
+        return jsonify(aulas_formatadas)
+    except Exception as e:
+        print("Erro ao buscar aulas:", e)
+        return jsonify({"error": "Erro ao buscar aulas"}), 500
+
 @app.route('/api/alunos', methods=['POST'])
 def create_aluno():
     try:
@@ -312,10 +433,151 @@ def logout():
     session.clear()  # Remove todos os dados armazenados na sessão
     return redirect("/")
 
+
+@app.route("/api/inscrever_aula", methods=["POST"])
+def inscrever_aula():
+    if 'user_id' not in session:  # Verifica se o usuário está autenticado
+        return jsonify({"message": "Usuário não autenticado"}), 401  # Retorna erro de não autenticado
+    
+    try:
+        # Obtém o id_aula do corpo da requisição
+        data = request.get_json()
+        id_aula = data.get('id_aula')
+        
+        # Recupera o id_aluno da sessão
+        id_aluno = session['user_id']
+        
+        # Insere a inscrição na tabela aula_aluno
+        query = """
+            INSERT INTO aula_aluno (id_aula, id_aluno)
+            VALUES (%s, %s)
+        """
+        # Execute a query com o id_aula e id_aluno
+        cursor = mysql.connection.cursor()
+        cursor.execute(query, (id_aula, id_aluno))
+        mysql.connection.commit()
+        
+        return jsonify({"message": "Inscrição realizada com sucesso!"}), 200
+    
+    except Exception as e:
+        mysql.connection.rollback()  # Caso algo dê errado, faz o rollback
+        return jsonify({"message": "Erro ao inscrever-se na aula: " + str(e)}), 500
+
+
 @app.route("/debug/sessao", methods=["GET"])
 def debug_sessao():
     return jsonify(dict(session))  # Transforma a sessão em um dicionário JSON
 
+@app.route("/criar_aula")
+def criar_aula():
+    id_monitor = session.get('user_id')
+    return render_template('criar_aula.html')
+
+@app.route("/login_func", methods=["POST"])
+def login_func():
+    print("Função Login")
+    data = request.json
+    print(f"{data}")
+    email = data.get("email")
+    senha = data.get("senha")
+
+    if not email or not senha:
+        return jsonify({"success": False, "message": "Preencha todos os campos."}), 400
+
+    # Primeiro, tenta validar como aluno
+    user = validate_user(email, senha, is_monitor=False)
+    if user:
+        session["user_id"] = user[0]
+        session["user_type"] = "aluno"
+        session["user_name"] = user[1]
+        return jsonify({"success": True, "redirect": "/home_aluno"})
+
+    # Caso não seja aluno, tenta como monitor
+    user = validate_user(email, senha, is_monitor=True)
+    if user:
+        session["user_id"] = user[0]
+        session["user_type"] = "monitor"
+        session["user_name"] = user[1]
+        return jsonify({"success": True, "redirect": "/home_monitor"})
+
+    # Se não for encontrado, retorna erro
+    return jsonify({"success": False, "message": "Credenciais inválidas."}), 401
+
+
+@app.route('/api/session', methods=['GET'])
+def get_session_data():
+    user_id = session.get('user_id')
+    user_type = session.get('user_type')
+    user_name = session.get('user_name')
+
+    if not user_id or not user_type:
+        return jsonify({'error': 'Usuário não autenticado'}), 403
+
+    return jsonify({
+        'user_id': user_id,  # Aqui usamos user_id diretamente
+        'user_type': user_type,
+        'user_name': user_name
+    }), 200
+
+@app.route('/api/aulas', methods=['POST'])
+def create_aula():
+    # Recupera o id_monitor da sessão
+    id_monitor = session.get('user_id')
+    if not id_monitor:
+        return jsonify({'error': 'Usuário não autenticado ou sessão inválida'}), 403
+
+    try:
+        data = request.get_json()
+        
+        # Debug dos dados recebidos
+        print("Dados Recebidos no Backend:")
+        print(f"Título: {data.get('titulo')}")
+        print(f"Horário: {data.get('horario')}")
+        print(f"Descrição: {data.get('descricao')}")
+        print(f"ID Matéria: {data.get('id_materia')}")
+        print(f"Link: {data.get('link')}")
+        print(f"ID Monitor: {id_monitor}")
+        
+        cursor = mysql.connection.cursor()
+        
+        # Insere os dados na tabela aulas
+        cursor.execute('''
+            INSERT INTO aulas (titulo, horario, descricao, id_materia, link, id_monitor)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        ''', (data['titulo'], data['horario'], data['descricao'], data['id_materia'], data['link'], id_monitor))
+        
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({'message': 'Aula criada com sucesso'}), 201
+
+    except Exception as e:
+        # Print do erro no console para depuração
+        print(f"Erro ao criar aula: {str(e)}")
+        return jsonify({'error': str(e)}), 400
+
+@app.route("/api/get_user", methods=["GET"])
+def get_user_data():
+    user_id = session.ger("user_id")
+    user_type = session.get("user_type")
+
+    if not user_id:
+        return jsonify({"error": "Usuário não autorizado"}), 403
+
+    try:
+        user_data = fetch_user_data(user_id)  # Busca as aulas inscritas para o aluno
+
+        # Formata os dados para JSON
+        aulas_formatadas = [
+            {
+                "nome": aula["nome"],
+                "email": aula["email"],
+                "type": user_type,
+            }
+        ]
+        return jsonify(aulas_formatadas)
+    except Exception as e:
+        print("Erro ao buscar aulas:", e)
+        return jsonify({"error": "Erro ao buscar aulas"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
