@@ -25,14 +25,14 @@
     <main class="main-content">
         <div class="container">
             <!-- Informações da Aula -->
-            <section class="lesson-details">
-                <h1>Título da Aula: Introdução à Matemática</h1>
-                <p><strong>Descrição:</strong> Nesta aula, aprenderemos os conceitos básicos de álgebra e como aplicá-los no dia a dia.</p>
-                <p><strong>Data:</strong> 20/11/2024</p>
-                <p><strong>Hora:</strong> 15:30</p>
-                <p><strong>Matéria:</strong> Matemática</p>
-                <p><strong>Monitor:</strong> Gabriel</p>
-            </section>
+            <div class="aula-detalhes">
+                <h1>{{ aula.titulo }}</h1>
+                <p><strong>Data e Hora:</strong> {{ aula.horario }}</p>
+                <p><strong>Matéria:</strong> {{ aula.materia }}</p>
+                <p><strong>Monitor:</strong> {{ aula.monitor }}</p>
+                <p><strong>Descrição:</strong> {{ aula.descricao }}</p>
+            </div>
+            <button class="register-button">Inscrever-se</button>
 
             <div class="subscribe-container">
                 <button class="subscribe-button" onclick="inscreverAula()">Inscrever-se</button>
