@@ -1,53 +1,34 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minha Conta - Monitor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/conta_monitor.css') }}">
+    <title>Minha Conta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/conta_aluno.css') }}">
 </head>
 <body>
-    <!-- Cabeçalho -->
-    <header class="header">
+    <header>
         <div class="container">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Open Skills" class="logo">
+            <img src="logo.png" alt="Logo Open Skills" class="logo">
             <nav>
                 <ul>
-                    <li><a href="{{ url_for('home_monitor') }}">Minhas Aulas</a></li>
+                    <li><a href="/">← Voltar</a></li>
                 </ul>
             </nav>
         </div>
     </header>
-
-    <!-- Conteúdo Principal -->
     <main class="main-content">
-        <div class="container">
+        <div class="card">
             <h1>Minha Conta</h1>
-            <form id="accountForm" class="account-form">
-                <label for="nome">Nome:</label>
-                <input type="text" id="nome" name="nome" placeholder="Digite seu nome" value="João Monitor" required>
-
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email" placeholder="Digite seu e-mail" value="joao.monitor@email.com" required>
-
-                <label for="senha">Nova Senha:</label>
-                <input type="password" id="senha" name="senha" placeholder="Digite uma nova senha">
-
-                <label for="bio">Biografia:</label>
-                <textarea id="bio" name="bio" placeholder="Escreva algo sobre você" rows="5">Monitor de Matemática com 5 anos de experiência em ensino fundamental e médio.</textarea>
-
-                <button type="submit" class="save-button">Salvar Alterações</button>
-            </form>
+            <p><strong>Nome:</strong> Nome do Monitor</p>
+            <p><strong>Email:</strong> monitor@example.com</p>
+            <p><strong>Cargo:</strong> Monitor</p>
+            <button class="logout-button" aria-label="Logout da conta">Logout</button>
         </div>
     </main>
-
-    <!-- Rodapé -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
-        </div>
+        <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
     </footer>
-
-    <script src="{{ url_for('static', filename='js/conta_monitor.js') }}"></script>
+    <script src="conta_monitor.js"></script>
 </body>
 </html>

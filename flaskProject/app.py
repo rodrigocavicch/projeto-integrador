@@ -32,6 +32,18 @@ def fetch_one(query, params=None):
     cur.close()
     return rv
 
+def fetch_email_user_one(query, params=None):
+    cur = mysql.connection.cursor()
+    try:
+        if params:
+            cur.execute(query, params)
+        else:
+            cur.execute(query)
+        rv = cur.fetchone()  # Retorna apenas um registro
+    finally:
+        cur.close()
+    return rv
+
 def validate_user(email, senha, is_monitor=False):
     query = (
         "SELECT id_aluno, nome_aluno FROM alunos WHERE email_aluno=%s AND senha_aluno=%s"
@@ -428,10 +440,12 @@ def create_monitor():
     except Exception as e:
         return jsonify({'error': str(e)}), 400
     
-@app.route("/logout")
+@app.route('/logout', methods=['POST'])
 def logout():
-    session.clear()  # Remove todos os dados armazenados na sessão
-    return redirect("/")
+    # Remove todos os dados da sessão
+    session.clear()
+    # Redireciona para a página inicial
+    return redirect(url_for('landing_page'))
 
 
 @app.route("/api/inscrever_aula", methods=["POST"])
@@ -555,29 +569,51 @@ def create_aula():
         print(f"Erro ao criar aula: {str(e)}")
         return jsonify({'error': str(e)}), 400
 
-@app.route("/api/get_user", methods=["GET"])
-def get_user_data():
-    user_id = session.ger("user_id")
-    user_type = session.get("user_type")
+def fetch_user_email(user_id, user_type):
+    # Dicionário para mapear os tipos de usuário às consultas
+    user_queries = {
+        "aluno": "SELECT email_aluno AS email FROM alunos WHERE id_aluno = %s;",
+        "monitor": "SELECT email_monitor AS email FROM monitores WHERE id_monitor = %s;"
+    }
 
-    if not user_id:
+    if user_type not in user_queries:
+        raise ValueError("Tipo de usuário inválido")
+
+    query = user_queries[user_type]
+
+    try:
+        # Usa fetch_one para buscar apenas um resultado
+        data = fetch_email_user_one(query, (user_id,))
+    except Exception as e:
+        print("Erro na consulta ao banco de dados:", e)
+        raise e
+
+    # Retorna os dados ou None
+    return {"email": data[0]} if data else None
+
+
+@app.route("/api/get_user_email", methods=["GET"])
+def get_user_email():
+    user_id = session.get("user_id")
+    user_type = session.get("user_type")
+    user_nome = session.get("user_name")
+
+    if not user_id or not user_type:
         return jsonify({"error": "Usuário não autorizado"}), 403
 
     try:
-        user_data = fetch_user_data(user_id)  # Busca as aulas inscritas para o aluno
+        # Busca os dados do usuário
+        user_data = fetch_user_email(user_id, user_type)
 
-        # Formata os dados para JSON
-        aulas_formatadas = [
-            {
-                "nome": aula["nome"],
-                "email": aula["email"],
-                "type": user_type,
-            }
-        ]
-        return jsonify(aulas_formatadas)
+        if user_data:
+            return jsonify(user_data)  # Retorna um objeto JSON com os dados
+        else:
+            return jsonify({"error": "Dados do usuário não encontrados"}), 404
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        print("Erro ao buscar aulas:", e)
-        return jsonify({"error": "Erro ao buscar aulas"}), 500
+        print("Erro ao buscar dados do usuário:", e)
+        return jsonify({"error": "Erro ao buscar dados do usuário"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

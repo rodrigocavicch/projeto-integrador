@@ -1,13 +1,32 @@
-document.getElementById("accountForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Evita o recarregamento da página
+// Função para lidar com o logout
+function handleLogout(event) {
+    event.preventDefault(); // Previne o comportamento padrão do botão de submit
 
-    const nome = document.getElementById("nome").value;
-    const email = document.getElementById("email").value;
-    const senha = document.getElementById("senha").value;
-    const bio = document.getElementById("bio").value;
+    // Envia a requisição de logout para o servidor
+    fetch('/logout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Redireciona o usuário para a página inicial ("/") após o logout
+            window.location.href = '/';
+        } else {
+            alert('Erro ao fazer logout. Tente novamente.');
+        }
+    })
+    .catch(error => {
+        console.error('Erro na solicitação de logout:', error);
+        alert('Erro ao se comunicar com o servidor.');
+    });
+}
 
-    // Simula o salvamento das informações
-    console.log("Alterações salvas:", { nome, email, senha, bio });
-
-    alert("Suas alterações foram salvas com sucesso!");
+// Adiciona um evento de clique ao botão de logout
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutButton = document.querySelector('.logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', handleLogout);
+    }
 });

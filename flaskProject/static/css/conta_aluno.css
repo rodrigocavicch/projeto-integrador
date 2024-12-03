@@ -4,9 +4,10 @@ html, body {
     display: flex;
     flex-direction: column;
     font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4; /* Cor de fundo suave */
 }
 
-/* Estilo do cabeçalho */
+/* Cabeçalho */
 
 header {
     display: flex;
@@ -41,7 +42,6 @@ nav ul li {
 }
 
 nav ul li a {
-    padding-right: 20px;
     text-decoration: none;
     color: #f39c12;
     font-weight: bold;
@@ -51,68 +51,144 @@ nav ul li a:hover {
     color: #ddd;
 }
 
-/* Formulário Minha Conta */
+/* Área principal */
 
-
-.container h1{
-    padding-left: 20px;
-}
-
-.account-form {
+.main-content {
+    flex: 1;
+    padding: 40px 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    align-items: center;
 }
 
-.account-form label {
-    font-weight: bold;
+.main-content h1 {
+    text-align: center;
     color: #333;
+    margin-bottom: 20px;
+    font-size: 2rem;
 }
 
-.account-form input {
+/* Filtros */
+.filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+.search-bar,
+.filter {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
+    flex: 1;
+    max-width: 300px;
+}
+
+/* Lista de Aulas */
+.lesson-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.lesson-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.lesson-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.lesson-card h2 {
+    color: #f39c12;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.lesson-card h5,
+.lesson-card p {
+    color: #555;
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+.lesson-card a.lesson-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #f39c12;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.lesson-card a.lesson-link:hover {
+    background-color: #e69500;
+}
+
+/* Estilo do card */
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border: 1px solid #ddd;
+    text-align: center;
+    max-width: 400px;
     width: 100%;
 }
 
-.account-form input:focus {
-    outline: none;
-    border-color: #ffa500;
-    box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+/* Títulos e texto no card */
+.card h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 15px;
 }
 
-.save-button {
-    background-color: #4caf50;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s ease;
-}
-
-.save-button:hover {
-    background-color: #45a049;
+.card p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 10px;
 }
 
 /* Rodapé */
 
 .footer {
-    background-color: #000000;
+    background-color: #000;
     color: #fff;
     padding: 10px 0;
     text-align: center;
-    position: relative;
-    bottom: 0;
     width: 100%;
+}
+
+.logout-button {
+    padding: 10px 20px;
+    background-color: #f39c12; /* Cor do botão */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+.logout-button:hover {
+    background-color: #e69500; /* Cor ao passar o mouse */
 }
 
 footer p {

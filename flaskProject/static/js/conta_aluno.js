@@ -1,8 +1,7 @@
 let user_id;
-let lessons = []; // Declaração global para armazenar as aulas
 
 // Função para carregar o ID do monitor
-async function carregarIdAluno() {
+async function carregarIdMonitor() {
     try {
         const response = await fetch('/api/session');
         if (!response.ok) {
@@ -22,3 +21,32 @@ async function carregarIdAluno() {
         alert("Erro ao carregar informações do usuário.");
     }
 }
+// Função para carregar o e-mail do usuário
+async function carregarEmailUsuario() {
+    try {
+        // Faz a requisição para obter o e-mail do usuário
+        const response = await fetch('/api/get_user_email');
+        if (!response.ok) {
+            throw new Error('Erro ao buscar o e-mail do usuário');
+        }
+
+        const emailData = await response.json();
+
+        // Verifica se houve erro no dado retornado
+        if (emailData.error) {
+            console.error(emailData.error);
+            document.getElementById('email').innerHTML = 'E-mail não encontrado';
+            return;
+        }
+
+        // Exibe o e-mail no elemento HTML
+        document.getElementById('email').textContent = emailData.email;
+    } catch (error) {
+        console.error('Erro ao carregar e-mail do usuário:', error);
+        document.getElementById('email').textContent = 'Erro ao carregar o e-mail.';
+    }
+}
+
+// Chamar a função ao carregar a página
+document.addEventListener('DOMContentLoaded', carregarEmailUsuario);
+window.onload = carregarIdMonitor;
