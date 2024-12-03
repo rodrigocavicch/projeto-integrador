@@ -24,7 +24,7 @@
         <div class="container">
             <div class="card">
                 <h1>Minha Conta</h1>
-                <p><strong>Nome:</strong> {{ session.get('user_nome') }}</p> <!-- Exibe o nome do usuário -->
+                <p><strong>Nome:</strong> {{ session.get('user_name') }}</p> <!-- Exibe o nome do usuário -->
                 <p><strong>E-mail:</strong> <span id="email">Carregando...</span></p> <!-- Exibe o e-mail -->
                 <p><strong>Você está logado como:</strong> {{ session.get('user_type') }}</p> <!-- Exibe o tipo de usuário -->
                 <form action="/logout" method="POST">

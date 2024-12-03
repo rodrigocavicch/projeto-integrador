@@ -10,6 +10,7 @@ async function carregarIdMonitor() {
 
         const sessionData = await response.json();
         user_id = sessionData.user_id;
+        user_name = sessionData.user_name;
 
         if (user_id) {
             console.log("ID do Usuário:", user_id);

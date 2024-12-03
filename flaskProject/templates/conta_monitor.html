@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,28 +7,40 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/conta_aluno.css') }}">
 </head>
 <body>
-    <header>
+    <!-- Cabeçalho -->
+    <header class="header">
         <div class="container">
-            <img src="logo.png" alt="Logo Open Skills" class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Open Skills" class="logo">
             <nav>
                 <ul>
-                    <li><a href="/">← Voltar</a></li>
+                    <li><a href="{{ url_for('home_monitor') }}" class="back-button">&#8592; Voltar</a></li>
                 </ul>
             </nav>
         </div>
     </header>
+
+    <!-- Conteúdo Principal -->
     <main class="main-content">
-        <div class="card">
-            <h1>Minha Conta</h1>
-            <p><strong>Nome:</strong> Nome do Monitor</p>
-            <p><strong>Email:</strong> monitor@example.com</p>
-            <p><strong>Cargo:</strong> Monitor</p>
-            <button class="logout-button" aria-label="Logout da conta">Logout</button>
+        <div class="container">
+            <div class="card">
+                <h1>Minha Conta</h1>
+                <p><strong>Nome:</strong> {{ session.get('user_name') }}</p> <!-- Exibe o nome do usuário -->
+                <p><strong>E-mail:</strong> <span id="email">Carregando...</span></p> <!-- Exibe o e-mail -->
+                <p><strong>Você está logado como:</strong> {{ session.get('user_type') }}</p> <!-- Exibe o tipo de usuário -->
+                <form action="/logout" method="POST">
+                    <button type="submit" class="logout-button">Logout</button>
+                </form>
+            </div>            
         </div>
     </main>
+    <!-- Rodapé -->
     <footer class="footer">
-        <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        <div class="container">
+            <p>&copy; 2024 Open Skills - Todos os direitos reservados.</p>
+        </div>
     </footer>
-    <script src="conta_monitor.js"></script>
+
+    <script src="{{ url_for('static', filename='js/conta_aluno.js') }}"></script>
+    <div id="userData" data-id="{{ user_id }}"></div>
 </body>
 </html>
