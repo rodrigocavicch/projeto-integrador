@@ -44,6 +44,28 @@ def fetch_email_user_one(query, params=None):
         cur.close()
     return rv
 
+def fetch_user_email(user_id, user_type):
+    # Dicionário para mapear os tipos de usuário às consultas
+    user_queries = {
+        "aluno": "SELECT email_aluno AS email FROM alunos WHERE id_aluno = %s;",
+        "monitor": "SELECT email_monitor AS email FROM monitores WHERE id_monitor = %s;"
+    }
+
+    if user_type not in user_queries:
+        raise ValueError("Tipo de usuário inválido")
+
+    query = user_queries[user_type]
+
+    try:
+        # Usa fetch_one para buscar apenas um resultado
+        data = fetch_email_user_one(query, (user_id,))
+    except Exception as e:
+        print("Erro na consulta ao banco de dados:", e)
+        raise e
+
+    # Retorna os dados ou None
+    return {"email": data[0]} if data else None
+
 def validate_user(email, senha, is_monitor=False):
     query = (
         "SELECT id_aluno, nome_aluno FROM alunos WHERE email_aluno=%s AND senha_aluno=%s"
@@ -58,25 +80,58 @@ def validate_user(email, senha, is_monitor=False):
         print(f"Erro ao validar usuário: {e}")
         return None
 
+
+def fetch_monitor_classes(monitor_id):
+    query = """
+        SELECT a.id_aula, a.titulo, a.descricao, a.link, a.horario, m.nome_materia
+        FROM aulas a
+        JOIN materias m ON a.id_materia = m.id_materia
+        WHERE a.id_monitor = %s
+        ORDER BY a.horario;
+    """
+    cur = mysql.connection.cursor()  
+    cur.execute(query, (monitor_id,))
+    aulas = cur.fetchall()
+
+    # Obter os nomes das colunas
+    colunas = [desc[0] for desc in cur.description]
+    cur.close()
+
+    # Converter tuplas em dicionários
+    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
+    return aulas_como_dicionario
+
+def fetch_aulas_disponiveis(aluno_id):
+    query = """
+        SELECT a.id_aula, a.titulo, a.descricao, a.horario, a.link, m.nome_materia
+        FROM aulas a
+        JOIN materias m ON a.id_materia = m.id_materia
+        WHERE a.id_aula NOT IN (
+            SELECT aa.id_aula
+            FROM aula_aluno aa
+            WHERE aa.id_aluno = %s
+        )
+        ORDER BY a.horario;
+    """
+    cur = mysql.connection.cursor()
+    cur.execute(query, (aluno_id,))
+    aulas = cur.fetchall()
+
+    # Obter os nomes das colunas
+    colunas = [desc[0] for desc in cur.description]
+    cur.close()
+
+    # Converter tuplas em dicionários
+    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
+    return aulas_como_dicionario
+
 @app.route("/")
 def landing_page():
     return render_template('landing_page.html')
 
 @app.route("/login")
 def login():
-    return render_template('login.html')  # Flask will look for this in the 'templates' folder
-
-@app.route("/aula_aluno")
-def aula_aluno():
-    return render_template('aula_aluno.html')
-
-@app.route("/aula_aluno_inscrito")
-def aula_aluno_inscrito():
-    return render_template('aula_aluno_inscrito.html')
-
-@app.route("/aula_monitor")
-def aula_monitor():
-    return render_template('aula_monitor.html')
+    return render_template('login.html')  
 
 @app.route("/cadastro_aluno")
 def cadastro_aluno():
@@ -251,25 +306,6 @@ def get_aula_aluno():
     ]
     return jsonify(aula_aluno)
 
-def fetch_monitor_classes(monitor_id):
-    query = """
-        SELECT a.id_aula, a.titulo, a.descricao, a.link, a.horario, m.nome_materia
-        FROM aulas a
-        JOIN materias m ON a.id_materia = m.id_materia
-        WHERE a.id_monitor = %s
-        ORDER BY a.horario;
-    """
-    cur = mysql.connection.cursor()  
-    cur.execute(query, (monitor_id,))
-    aulas = cur.fetchall()
-
-    # Obter os nomes das colunas
-    colunas = [desc[0] for desc in cur.description]
-    cur.close()
-
-    # Converter tuplas em dicionários
-    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
-    return aulas_como_dicionario
 
 @app.route("/api/aulas_monitor", methods=["GET"])
 def get_aulas_monitor():
@@ -298,30 +334,6 @@ def get_aulas_monitor():
     except Exception as e:
         print("Erro ao buscar aulas:", e)
         return jsonify({"error": "Erro ao buscar aulas"}), 500
-
-def fetch_aulas_disponiveis(aluno_id):
-    query = """
-        SELECT a.id_aula, a.titulo, a.descricao, a.horario, a.link, m.nome_materia
-        FROM aulas a
-        JOIN materias m ON a.id_materia = m.id_materia
-        WHERE a.id_aula NOT IN (
-            SELECT aa.id_aula
-            FROM aula_aluno aa
-            WHERE aa.id_aluno = %s
-        )
-        ORDER BY a.horario;
-    """
-    cur = mysql.connection.cursor()
-    cur.execute(query, (aluno_id,))
-    aulas = cur.fetchall()
-
-    # Obter os nomes das colunas
-    colunas = [desc[0] for desc in cur.description]
-    cur.close()
-
-    # Converter tuplas em dicionários
-    aulas_como_dicionario = [dict(zip(colunas, aula)) for aula in aulas]
-    return aulas_como_dicionario
 
 
 @app.route("/api/aulas_disponiveis", methods=["GET"])
@@ -568,28 +580,6 @@ def create_aula():
         # Print do erro no console para depuração
         print(f"Erro ao criar aula: {str(e)}")
         return jsonify({'error': str(e)}), 400
-
-def fetch_user_email(user_id, user_type):
-    # Dicionário para mapear os tipos de usuário às consultas
-    user_queries = {
-        "aluno": "SELECT email_aluno AS email FROM alunos WHERE id_aluno = %s;",
-        "monitor": "SELECT email_monitor AS email FROM monitores WHERE id_monitor = %s;"
-    }
-
-    if user_type not in user_queries:
-        raise ValueError("Tipo de usuário inválido")
-
-    query = user_queries[user_type]
-
-    try:
-        # Usa fetch_one para buscar apenas um resultado
-        data = fetch_email_user_one(query, (user_id,))
-    except Exception as e:
-        print("Erro na consulta ao banco de dados:", e)
-        raise e
-
-    # Retorna os dados ou None
-    return {"email": data[0]} if data else None
 
 
 @app.route("/api/get_user_email", methods=["GET"])
